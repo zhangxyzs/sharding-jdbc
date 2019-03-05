@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+                                http://shardingsphere.io/schema/shardingsphere/sharding
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <context:component-scan base-package="com.zhangxy.sharding" />
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.zhangxy.sharding.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 配置sqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="shardingDataSource"/>
+        <property name="mapperLocations" value="classpath*:config/mapper/*Mapper.xml"/>
+    </bean>
+
+    <!--内敛策略-->
+    <!--<sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}" />-->
+    <bean id="databaseShardingAlgorithm" class="com.zhangxy.sharding.algorithms.DatabaseShardingAlgorithm"/>
+    <bean id="orderTableShardingAlgorithm" class="com.zhangxy.sharding.algorithms.OrderTableShardingAlgorithm"/>
+
+    <!--复杂策略-->
+    <sharding:standard-strategy id="dataBaseStandardStrategy" sharding-column="order_id" precise-algorithm-ref="databaseShardingAlgorithm" />
+    <sharding:standard-strategy id="orderTableStandardStrategy" sharding-column="order_id" precise-algorithm-ref="orderTableShardingAlgorithm" />
+    <!--<sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />-->
+
+    <sharding:data-source id="shardingDataSource">
+        <!--配置数据源-->
+        <sharding:sharding-rule data-source-names="sharding_0,sharding_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="sharding_$->{0..1}.t_order_$->{0..1}" database-strategy-ref="dataBaseStandardStrategy" table-strategy-ref="orderTableStandardStrategy" />
+                <!--<sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />-->
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+
+    <!-- 事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="shardingDataSource" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>
