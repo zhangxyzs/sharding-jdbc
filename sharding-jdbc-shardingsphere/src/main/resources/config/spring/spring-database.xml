@@ -16,7 +16,7 @@
         </property>
     </bean>
 
-    <bean name="sharding_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean name="ds0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="url" value="${jdbc_url0}" />
         <property name="username" value="${jdbc_username0}" />
         <property name="password" value="${jdbc_password0}" />
@@ -46,7 +46,7 @@
         <property name="filters" value="stat" />
     </bean>
 
-    <bean name="sharding_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean name="ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="url" value="${jdbc_url1}" />
         <property name="username" value="${jdbc_username1}" />
         <property name="password" value="${jdbc_password1}" />

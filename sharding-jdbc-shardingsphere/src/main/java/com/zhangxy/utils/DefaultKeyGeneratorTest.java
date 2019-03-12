@@ -13,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class DefaultKeyGeneratorTest {
     public static void main(String[] args) {
-        DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();//类锁 请求都创建一次
+        //类锁 请求都创建一次
+        DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
         Map map = new ConcurrentHashMap();
         TlUtil.timeTasks(1000, 1, new Runnable() {
             @Override
@@ -23,8 +24,6 @@ public class DefaultKeyGeneratorTest {
             }
         });
         System.out.println(map);
-
-
     }
 
 }

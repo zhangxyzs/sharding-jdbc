@@ -1,6 +1,8 @@
 package com.zhangxy.sharding.algorithm;
 
 import com.zhangxy.sharding.entity.Order;
+import com.zhangxy.sharding.entity.OrderItem;
+import com.zhangxy.sharding.mapper.OrderItemMapper;
 import com.zhangxy.sharding.service.OrderService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +22,33 @@ import javax.annotation.Resource;
 public class TestOrder {
     @Resource
     public OrderService orderService;
+    @Resource
+    public OrderItemMapper orderItemMapper;
 
     @Test
     public void testOrderInsert() {
-        Order o = new Order();
-        o.setOrderId(1233);
-        o.setUserId(11111);
-        o.setStatus("1");
-        orderService.insert(o);
+        //用户就为10和11
+        for (int i = 9990; i < 9999; i++) {
+            Order order = new Order();
+            order.setUserId(10);
+            order.setStatus("insert");
+            Integer count=orderService.insert(order);
+            System.out.println("gengeratorId:"+order.getOrderId());
+            OrderItem orderItem=new OrderItem();
+            orderItem.setUserId(10);
+            orderItem.setOrderId(order.getOrderId());
+            orderItemMapper.insert(orderItem);
+        }
+        for (int i = 990; i < 999; i++) {
+            Order order = new Order();
+            order.setUserId(11);
+            order.setStatus("insert");
+            Integer count=orderService.insert(order);
+            System.out.println("gengeratorId:"+order.getOrderId());
+            OrderItem orderItem=new OrderItem();
+            orderItem.setUserId(11);
+            orderItem.setOrderId(order.getOrderId());
+            orderItemMapper.insert(orderItem);
+        }
     }
 }

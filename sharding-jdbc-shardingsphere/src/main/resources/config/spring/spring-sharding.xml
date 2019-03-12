@@ -23,22 +23,22 @@
         <property name="mapperLocations" value="classpath*:config/mapper/*Mapper.xml"/>
     </bean>
 
-    <!--内敛策略-->
-    <!--<sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}" />-->
-    <bean id="databaseShardingAlgorithm" class="com.zhangxy.sharding.algorithms.DatabaseShardingAlgorithm"/>
-    <bean id="orderTableShardingAlgorithm" class="com.zhangxy.sharding.algorithms.OrderTableShardingAlgorithm"/>
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}" />
+    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
+    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <!--复杂策略-->
-    <sharding:standard-strategy id="dataBaseStandardStrategy" sharding-column="user_id" precise-algorithm-ref="databaseShardingAlgorithm" />
-    <sharding:standard-strategy id="orderTableStandardStrategy" sharding-column="order_id" precise-algorithm-ref="orderTableShardingAlgorithm" />
-    <!--<sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />-->
+    <!--自动生成主键-->
 
+    <bean id="orderIdGenerator" class="io.shardingsphere.core.keygen.DefaultKeyGenerator"/>
     <sharding:data-source id="shardingDataSource">
-        <!--配置数据源-->
-        <sharding:sharding-rule data-source-names="sharding_0,sharding_1">
+        <sharding:props>
+            <prop key="sql.show">true</prop>
+        </sharding:props>
+        <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="sharding_$->{0..1}.t_order_$->{0..1}" database-strategy-ref="dataBaseStandardStrategy" table-strategy-ref="orderTableStandardStrategy" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="sharding_$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="dataBaseStandardStrategy" table-strategy-ref="orderTableStandardStrategy" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy"
+                                     generate-key-column-name="order_id"/>
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

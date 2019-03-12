@@ -22,10 +22,11 @@ public class OrderTableShardingAlgorithm implements PreciseShardingAlgorithm<Int
      * @param preciseShardingValue 指表的集合
      * @return
      */
+    @Override
     public String doSharding(Collection<String> collection, PreciseShardingValue<Integer> preciseShardingValue) {
         log.info("collection:" + JSON.toJSONString(collection) + ",preciseShardingValue:" + JSON.toJSONString(preciseShardingValue));
         for(String name:collection) {
-            if (name.endsWith(preciseShardingValue.getValue() / (4000*THOUSAND) + "")) {
+            if (name.endsWith(preciseShardingValue.getValue() %2 + "")) {
                 log.info("return name:"+name);
                 return name;
             }

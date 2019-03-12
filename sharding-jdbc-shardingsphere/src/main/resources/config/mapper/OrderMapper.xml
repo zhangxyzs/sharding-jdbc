@@ -7,8 +7,8 @@
         <result column="status" property="status" jdbcType="VARCHAR" />
     </resultMap>
 
-    <insert id="insert">
-        insert into t_order (order_id,user_id,status) values (#{orderId},#{userId},#{status})
+    <insert id="insert" keyProperty="orderId" useGeneratedKeys="true">
+        insert into t_order (user_id,status) values (#{userId},#{status})
      </insert>
 
     <select id="findAll" resultMap="resultMap">

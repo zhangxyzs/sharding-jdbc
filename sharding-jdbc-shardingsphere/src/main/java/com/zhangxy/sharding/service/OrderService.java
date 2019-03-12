@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface OrderService {
 
-    public boolean insert(Order o);
+    public Integer insert(Order o);
 
     public List<Order> findAll();
 

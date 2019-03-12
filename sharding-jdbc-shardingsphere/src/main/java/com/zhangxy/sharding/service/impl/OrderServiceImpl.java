@@ -21,12 +21,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     public OrderMapper orderMapper;
-
+    @Override
     public List<Order> findAll() {
         return orderMapper.findAll();
     }
-
-    public boolean insert(Order u) {
-        return orderMapper.insert(u) > 0 ? true :false;
+    @Override
+    public Integer insert(Order u) {
+        return orderMapper.insert(u);
     }
 }

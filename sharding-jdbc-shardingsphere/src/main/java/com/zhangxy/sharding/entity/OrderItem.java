@@ -1,18 +1,22 @@
 package com.zhangxy.sharding.entity;
 
-import java.io.Serializable;
-
 /**
+ * OrderItem
+ *
  * @author zhangxy
- * @date 2019/03/05
+ * @date 2019/03/08
  **/
-public class Order implements Serializable {
-
+public class OrderItem {
+    private long orderItemId;
     private long orderId;
-
     private Integer userId;
+    public long getOrderItemId() {
+        return orderItemId;
+    }
 
-    private String status;
+    public void setOrderItemId(long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
 
     public long getOrderId() {
         return orderId;
@@ -30,11 +34,4 @@ public class Order implements Serializable {
         this.userId = userId;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }
